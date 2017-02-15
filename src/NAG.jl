@@ -28,11 +28,6 @@ module NAG
 
 using Compat
 
-include("Constants.jl")
-include("NAG_Errors.jl")
-include("_G01.jl")
-include("_S.jl")
-
 @static if is_windows()
     const NagInt = Int32
     const NagDouble = Float64
@@ -43,6 +38,12 @@ else
     const NagComplex = Complex128
 end
 const Nag_ColMajor = NagInt(102)
+
+include("Constants.jl")
+include("NAG_Errors.jl")
+include("_E04.jl")
+include("_G01.jl")
+include("_S.jl")
 
 export
     nag_licence_query, nag_license_query
