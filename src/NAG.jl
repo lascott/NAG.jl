@@ -46,14 +46,7 @@ const Nag_ColMajor = NagInt(102)
 
 export
     nag_licence_query, nag_license_query
-#    nag_complex_polygamma,
-#    nag_opt_read!,
-#    nag_opt_nlp!,
-#    nag_1d_quad_inf_1,
-#    nag_zero_cont_func_brent,
-#    nag_opt_lp!,
-#    nag_nearest_correlation!,
-#    nag_nearest_correlation,
+
     
 
 # NAG licence is not open,this next line must be specific to your details,
