@@ -41,6 +41,7 @@ const Nag_ColMajor = NagInt(102)
 
 include("Constants.jl")
 include("NAG_Errors.jl")
+include("_D01.jl")
 include("_E04.jl")
 include("_G01.jl")
 include("_S.jl")
