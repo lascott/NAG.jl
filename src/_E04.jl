@@ -63,15 +63,21 @@ end
 const c_confun = cfunction(confun_wrapper, Void,
     (NagInt, NagInt, Ptr{NagInt}, Ptr{Float64}, Ptr{Float64}, Ptr{Float64}, Ptr{NagInt}))
 
+# --------------------------------------------------------------
 
+@doc "$(section_str) :
+      See $(nag_doc_str) for further details
+     " nag_opt_read!
+"""
+ calls
+
+ * nag_opt_init (e04xxc) is the options structure initialization function
+ * nag_opt_read (e04xyc) reads a set of options values from a file
+ 
+   and assigns them to the options structure
+"""
 function nag_opt_read!(name::String, optfile::String, print::Bool = false)
 
-#
-# calls
-# nag_opt_init (e04xxc) is the options structure initialization function
-# nag_opt_read (e04xyc) reads a set of options values from a file
-# and assigns them to the options structure
-#
     options = zeros(Uint8,1440)
     reset_nag_error()
     ccall((:e04xxc, :libnagc_nag), Void, (Ptr{Void},), options)
@@ -81,6 +87,37 @@ function nag_opt_read!(name::String, optfile::String, print::Bool = false)
     return options
 end
 
+# --------------------------------------------------------------
+
+@doc "$(section_str) :
+      See $(nag_doc_str) for further details
+     " nag_opt_lp!
+"""
+  nag_opt_lp! (e04mfc)
+
+  solves linear programming (LP) problems of the form
+
+  minimize_{x ∈ ℝⁿ} cᵀx  subject to l ≤ ⟦ x Ax ⟧ᵀ ≤ u
+
+  where
+  * A     an m by n matrix.
+  * bl,bu an [n + nclin] vector 
+  * c     an n element vector
+  * x     an c element vector (initial guess returns opt value)
+  * optfile filename to populate NAG options
+  * transpose logical since NAG is row-major
+                    true  the rows are linear constraints
+                    false the columns are linear constraints
+
+  examples:
+
+  nag_opt_lp!(A,bl,bu,c,x)
+
+  -------------------------------------------------------------
+
+   Comments:
+
+"""
 function nag_opt_lp!(
     A         :: Matrix{Float64},
     bl        :: Vector{Float64},
@@ -90,29 +127,6 @@ function nag_opt_lp!(
     optfile   :: String = "",
     transpose :: Bool = true,
 )
-
-#  nag_opt_lp (e04mfc)
-#
-#  solves linear programming (LP) problems of the form
-#
-#  minimize_{x ∈ ℝⁿ} cᵀx  subject to l ≤ ⟦ x Ax ⟧ᵀ ≤ u
-#
-#  where
-#          A an m by n matrix.
-#      bl,bu an [n + nclin] vector 
-#          c an n element vector
-#          x an c element vector (initial guess returns opt value)
-#    optfile filename to populate NAG options
-#  transpose logical since NAG is row-major
-#                    true  the rows are linear constraints
-#                    false the columns are linear constraints
-#  -------------------------------------------------------------
-#
-#   Comments:
-#   see nag.co.uk/numeric/cl/nagdoc_cl26/html/e04/e04mfc.html
-#       for further details.
-#
-
 
     transpose && (A = A')
 
@@ -147,6 +161,40 @@ function nag_opt_lp!(
     return x, objf[]
 end
 
+# --------------------------------------------------------------
+
+@doc "$(section_str) :" nag_opt_nlp!
+"""
+  nag_opt_nlp (e04ucc)
+
+  solves nonlinear programming problems of the form
+
+ minimize_{x ∈ ℝⁿ} F(x)  subject to l ≤ ⟦ x Ax c(x)⟧ᵀ ≤ u
+
+ for sufficiently smooth functions F subject to constraints.
+
+  where
+          F the objective function, is a nonlinear function
+          Aₗ an nₗ by n constant matrix.
+      bl,bu an [n + nclin] vector 
+          c an n\_N element vector
+          x an c element vector (initial guess returns opt value)
+    optfile filename to populate NAG options
+  transpose logical since NAG is row-major
+                    true  the rows are linear constraints
+                    false the columns are linear constraints
+  -------------------------------------------------------------
+
+   Comments:
+
+   see nag.co.uk/numeric/cl/nagdoc_cl26/html/e04/e04ucc.html
+       for further details.
+
+   the matrix A\_L and the vector c may be empty
+   equality constraints are specified as bl\_i = bu\_i
+   unbounded constraints are expressed as options.inf_bound
+   the objective and constraint functions are assumed to be in ℂ²
+"""
 function nag_opt_nlp!(
     A  :: Matrix{Float64},
     bl :: Vector{Float64},
@@ -157,36 +205,6 @@ function nag_opt_nlp!(
     optfile :: String = "",
     transpose :: Bool = true,
 )
-
-#  nag_opt_nlp (e04ucc)
-#
-#  solves nonlinear programming problems of the form
-#
-# minimize_{x ∈ ℝⁿ} F(x)  subject to l ≤ ⟦ x Ax c(x)⟧ᵀ ≤ u
-#
-# for sufficiently smooth functions F subject to constraints.
-#
-#  where
-#          F the objective function, is a nonlinear function
-#          Aₗ an nₗ by n constant matrix.
-#      bl,bu an [n + nclin] vector 
-#          c an n\_N element vector
-#          x an c element vector (initial guess returns opt value)
-#    optfile filename to populate NAG options
-#  transpose logical since NAG is row-major
-#                    true  the rows are linear constraints
-#                    false the columns are linear constraints
-#  -------------------------------------------------------------
-#
-#   Comments:
-#
-#   see nag.co.uk/numeric/cl/nagdoc_cl26/html/e04/e04ucc.html
-#       for further details.
-#
-#   the matrix A\_L and the vector c may be empty
-#   equality constraints are specified as bl\_i = bu\_i
-#   unbounded constraints are expressed as options.inf_bound
-#   the objective and constraint functions are assumed to be in ℂ²
 
     transpose && (A = A')
 
